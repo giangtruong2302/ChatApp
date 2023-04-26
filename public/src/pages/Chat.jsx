@@ -24,7 +24,7 @@ export default function Chat() {
         )
       );
     }
-  }, []);
+  }, [navigate]);
   useEffect(() => {
     if (currentUser) {
       socket.current = io(host);
@@ -41,7 +41,7 @@ export default function Chat() {
         navigate("/setAvatar");
       }
     }
-  }, [currentUser]);
+  }, [currentUser, navigate]);
   const handleChatChange = (chat) => {
     setCurrentChat(chat);
   };
@@ -71,8 +71,8 @@ const Container = styled.div`
   align-items: center;
   background-color: #131324;
   .container {
-    height: 85vh;
-    width: 85vw;
+    height: 100%;
+    width: 100%;
     background-color: #00000076;
     display: grid;
     grid-template-columns: 25% 75%;

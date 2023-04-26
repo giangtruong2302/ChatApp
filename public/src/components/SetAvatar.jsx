@@ -24,7 +24,7 @@ export default function SetAvatar() {
   useEffect(async () => {
     if (!localStorage.getItem(process.env.REACT_APP_LOCALHOST_KEY))
       navigate("/login");
-  }, []);
+  }, [navigate]);
 
   const setProfilePicture = async () => {
     if (selectedAvatar === undefined) {
@@ -54,16 +54,16 @@ export default function SetAvatar() {
 
   useEffect(async () => {
     const data = [];
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < 2; i++) {
       const image = await axios.get(
-        `${api}/${Math.round(Math.random() * 1000)}`
+        `${api}/${Math.round(Math.random() * 20000)}`
       );
       const buffer = new Buffer(image.data);
       data.push(buffer.toString("base64"));
     }
     setAvatars(data);
     setIsLoading(false);
-  }, []);
+  }, [api]);
   return (
     <>
       {isLoading ? (
@@ -79,9 +79,8 @@ export default function SetAvatar() {
             {avatars.map((avatar, index) => {
               return (
                 <div
-                  className={`avatar ${
-                    selectedAvatar === index ? "selected" : ""
-                  }`}
+                  className={`avatar ${selectedAvatar === index ? "selected" : ""
+                    }`}
                 >
                   <img
                     src={`data:image/svg+xml;base64,${avatar}`}

@@ -1,11 +1,13 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { BiPowerOff } from "react-icons/bi";
 import styled from "styled-components";
 import axios from "axios";
 import { logoutRoute } from "../utils/APIRoutes";
+import ModalConfirm from "./ModalConfirm";
 export default function Logout() {
   const navigate = useNavigate();
+  const [showConfirm, setShowConfirm] = useState(false);
   const handleClick = async () => {
     const id = await JSON.parse(
       localStorage.getItem(process.env.REACT_APP_LOCALHOST_KEY)
@@ -17,9 +19,12 @@ export default function Logout() {
     }
   };
   return (
-    <Button onClick={handleClick}>
-      <BiPowerOff />
-    </Button>
+    <>
+      <Button onClick={() => setShowConfirm(true)}>
+        <BiPowerOff />
+      </Button>
+      {showConfirm && <ModalConfirm title={"Logout Confirm"} message={"Are you sure logout? "} onCancel={() => setShowConfirm(false)} onConfirm={() => handleClick()} />}
+    </>
   );
 }
 
