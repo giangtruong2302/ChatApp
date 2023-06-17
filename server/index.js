@@ -8,6 +8,16 @@ const socket = require("socket.io");
 require("dotenv").config();
 
 app.use(cors());
+
+app.use(function (req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Methods", "DELETE, PUT, GET, POST");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept"
+  );
+  next();
+});
 app.use(express.json());
 
 mongoose
@@ -28,9 +38,18 @@ app.use("/api/messages", messageRoutes);
 const server = app.listen(process.env.PORT, () =>
   console.log(`Server started on ${process.env.PORT}`)
 );
+// const io = socket(server, {
+//   cors: {
+//     origin: "http://localhost:3000",
+//     // origin: "*",
+//     credentials: true,
+//   },
+// });
+
 const io = socket(server, {
   cors: {
     origin: "http://localhost:3000",
+    // origin: "*",
     credentials: true,
   },
 });

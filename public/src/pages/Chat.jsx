@@ -14,6 +14,8 @@ export default function Chat() {
   const [contacts, setContacts] = useState([]);
   const [currentChat, setCurrentChat] = useState(undefined);
   const [currentUser, setCurrentUser] = useState(undefined);
+  const [mobileContact, setMobileContact] = useState(false);
+
   useEffect(async () => {
     if (!localStorage.getItem(process.env.REACT_APP_LOCALHOST_KEY)) {
       navigate("/login");
@@ -45,15 +47,40 @@ export default function Chat() {
   const handleChatChange = (chat) => {
     setCurrentChat(chat);
   };
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
   return (
     <>
-      <Container>
+      <Container mobileContact={mobileContact}>
         <div className="container">
-          <Contacts contacts={contacts} changeChat={handleChatChange} />
-          {currentChat === undefined ? (
-            <Welcome />
+          <Contacts contacts={contacts} changeChat={handleChatChange} mobileContact={mobileContact} onChangeMobileContact={setMobileContact} />
+          {isMobile && mobileContact ? (
+            <div className="chat-content">
+              {currentChat === undefined ? (
+                <Welcome />
+              ) : (
+                <ChatContainer currentChat={currentChat} socket={socket} />
+              )}
+            </div>
           ) : (
-            <ChatContainer currentChat={currentChat} socket={socket} />
+            <>
+              {currentChat === undefined ? (
+                <Welcome />
+              ) : (
+                <ChatContainer currentChat={currentChat} socket={socket} />
+              )}
+            </>
           )}
         </div>
       </Container>
@@ -76,8 +103,20 @@ const Container = styled.div`
     background-color: #00000076;
     display: grid;
     grid-template-columns: 25% 75%;
+    .chat-content{
+      height: 100%;
+      @media screen and (max-width: 768px){
+      ${props => props.mobileContact ? 'display: none;' : 'display: flex;'}
+      }
+    }
     @media screen and (min-width: 720px) and (max-width: 1080px) {
       grid-template-columns: 35% 65%;
+
+    }
+    @media screen and (max-width: 768px){
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
     }
   }
 `;

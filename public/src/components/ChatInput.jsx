@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { BsEmojiSmileFill } from "react-icons/bs";
 import { IoMdSend } from "react-icons/io";
 import styled from "styled-components";
 import Picker from "emoji-picker-react";
-
-export default function ChatInput({ handleSendMsg }) {
+import { MdClear } from 'react-icons/md'
+export default function ChatInput({ handleSendMsg, imagePreview, onClearImage }) {
   const [msg, setMsg] = useState("");
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const handleEmojiPickerhideShow = () => {
@@ -26,28 +26,75 @@ export default function ChatInput({ handleSendMsg }) {
   };
 
   return (
-    <Container>
-      <div className="button-container">
-        <div className="emoji">
-          <BsEmojiSmileFill onClick={handleEmojiPickerhideShow} />
-          {showEmojiPicker && <Picker onEmojiClick={handleEmojiClick} />}
-        </div>
-      </div>
-      <form className="input-container" onSubmit={(event) => sendChat(event)}>
-        <input
-          type="text"
-          placeholder="type your message here"
-          onChange={(e) => setMsg(e.target.value)}
-          value={msg}
+    <ChatInputContent>
+      <MessagePreview
+        isVisible={!!imagePreview}
+      >
+        <img
+          src={imagePreview ? imagePreview : ''}
+          id='preview'
+          alt='Preview'
+          className='image-preview'
         />
-        <button type="submit">
-          <IoMdSend />
-        </button>
-      </form>
-    </Container>
+        <span
+          className='trash'
+          onClick={() => onClearImage('')}
+        >
+          <MdClear />
+        </span>
+      </MessagePreview>
+      <Container>
+
+        <div className="button-container">
+          <div className="emoji">
+            <BsEmojiSmileFill onClick={handleEmojiPickerhideShow} />
+            {showEmojiPicker && <Picker onEmojiClick={handleEmojiClick} />}
+          </div>
+        </div>
+        <form className="input-container" onSubmit={(event) => sendChat(event)}>
+          <input
+            type="text"
+            placeholder="type your message here"
+            onChange={(e) => setMsg(e.target.value)}
+            value={msg}
+          />
+          <button type="submit">
+            <IoMdSend />
+          </button>
+        </form>
+      </Container>
+    </ChatInputContent>
+
   );
 }
 
+const ChatInputContent = styled.div`
+display: flex;
+flex-direction: column;
+gap:5px;
+height: auto;
+`
+const MessagePreview = styled.div`
+    position: relative;
+    display: flex;
+    align-items: center;
+    .image-preview{
+      max-width: 200px;
+      max-height: 100px;
+      border-radius: 20px;
+      ${props => !props.isVisible && 'display: none;'}
+    }
+    .trash{
+      position: absolute;
+      top: 0;
+      cursor: pointer;
+      transition: all 200ms;
+      ${props => !props.isVisible && 'display: none;'}
+      &:hover {
+        transform: scale(1.5);
+      }
+    }
+`
 const Container = styled.div`
   display: grid;
   align-items: center;
@@ -58,6 +105,7 @@ const Container = styled.div`
     padding: 0 1rem;
     gap: 1rem;
   }
+
   .button-container {
     display: flex;
     align-items: center;

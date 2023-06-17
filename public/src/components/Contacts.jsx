@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import Logo from "../assets/logo.svg";
-
-export default function Contacts({ contacts, changeChat }) {
+import { MdOutlineArrowBack } from 'react-icons/md';
+export default function Contacts({ contacts, changeChat, mobileContact, onChangeMobileContact }) {
   const [currentUserName, setCurrentUserName] = useState(undefined);
   const [currentUserImage, setCurrentUserImage] = useState(undefined);
   const [currentSelected, setCurrentSelected] = useState(undefined);
@@ -19,9 +19,14 @@ export default function Contacts({ contacts, changeChat }) {
   };
   return (
     <>
+      {currentSelected !== undefined && (
+        <HambugerIcon onClick={() => { onChangeMobileContact(!mobileContact); setCurrentSelected(undefined) }}>
+          <MdOutlineArrowBack color="#fff" size={28} />
+        </HambugerIcon>
+      )}
       {currentUserImage && currentUserImage && (
-        <Container>
-          <div className="brand">
+        <Container mobileContact={mobileContact}>
+          <div className="brand" onClick={() => changeChat(undefined)}>
             <img src={Logo} alt="logo" />
             <h3>Glopr Chat</h3>
           </div>
@@ -32,7 +37,7 @@ export default function Contacts({ contacts, changeChat }) {
                   key={contact._id}
                   className={`contact ${index === currentSelected ? "selected" : ""
                     }`}
-                  onClick={() => changeCurrentChat(index, contact)}
+                  onClick={() => { changeCurrentChat(index, contact); onChangeMobileContact(false) }}
                 >
                   <div className="avatar">
                     <img
@@ -63,16 +68,38 @@ export default function Contacts({ contacts, changeChat }) {
     </>
   );
 }
+const HambugerIcon = styled.div`
+display: none;
+@media screen and (max-width: 768px){
+  display: flex;
+  position: absolute;
+top:10px;
+left: 10px;
+}
+`
 const Container = styled.div`
   display: grid;
   grid-template-rows: 10% 75% 15%;
   overflow: hidden;
   background-color: #080420;
+  @media screen and (max-width: 768px) {
+     ${props => !props.mobileContact ? 'height: 0;' : 'height:100vh'}
+
+    .contacts {
+      transform: translateX(${props => (props.mobileContact ? "0" : "-100%")});
+      transition: transform 1000ms ease-in-out;
+    }
+    .current-user{
+      transform: translateX(${props => (props.mobileContact ? "0" : "-100%")});
+      transition: transform 500ms ease-in-out;
+    }
+  }
   .brand {
     display: flex;
     align-items: center;
     gap: 1rem;
     justify-content: center;
+    cursor: pointer;
     img {
       height: 2rem;
     }
@@ -95,6 +122,9 @@ const Container = styled.div`
         border-radius: 1rem;
       }
     }
+    @media screen and (max-width: 768px) {
+    ${props => !props.mobileContact ? 'height: 0;' : 'height:100vh'}
+    }
     .contact {
       background-color: #ffffff34;
       min-height: 5rem;
@@ -105,7 +135,7 @@ const Container = styled.div`
       display: flex;
       gap: 1rem;
       align-items: center;
-      transition: 0.5s ease-in-out;
+      transition: 1s ease-in-out;
       .avatar {
         img {
           height: 3rem;
